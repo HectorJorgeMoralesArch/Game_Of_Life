@@ -1,9 +1,9 @@
-import sys
+﻿import sys
 import argparse
 import numpy as np
 import random as rdm
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
+import matplotlib.animation as ani
 #Still Lifes
 Block=np.array([[255,255],[255,255]])
 Beehive=np.array([[0,255,255,0],[255,0,0,255],[0,255,255,0]])
@@ -22,10 +22,16 @@ GliderA=np.array([[0,255,0],[0,0,255],[255,255,255]])
 GliderB=np.array([[255,0,255],[0,255,255],[0,255,0]])
 GliderC=np.array([[0,0,255],[255,0,255],[0,255,255]])
 GliderD=np.array([[255,0,0],[0,255,255],[255,255,0]])
-LightWeightSpaceshipA=np.array([[255,0,0,255,0],[0,0,0,0,255],[255,0,0,0,255],[0,255,255,255,255]])
-LightWeightSpaceshipB=np.array([[0,0,255,255,0],[255,255,0,255,255],[255,255,255,255,0],[0,255,255,0,0]])
-LightWeightSpaceshipC=np.array([[0,255,255,255,255],[255,0,0,0,255],[0,0,0,0,255],[255,0,0,255,0]])
-LightWeightSpaceshipD=np.array([[0,255,255,0,0],[255,255,255,255,0],[255,255,0,255,255],[0,0,255,255,0]])
+LightWeightSpaceShipA=np.array([[255,0,0,255,0],[0,0,0,0,255],[255,0,0,0,255],[0,255,255,255,255]])
+LightWeightSpaceShipB=np.array([[0,0,255,255,0],[255,255,0,255,255],[255,255,255,255,0],[0,255,255,0,0]])
+LightWeightSpaceShipC=np.array([[0,255,255,255,255],[255,0,0,0,255],[0,0,0,0,255],[255,0,0,255,0]])
+LightWeightSpaceShipD=np.array([[0,255,255,0,0],[255,255,255,255,0],[255,255,0,255,255],[0,0,255,255,0]])
+#Living Thing
+Living=[BlinkerA,Beehive,Loaf,Boat,Tub,BlinkerA, BlinkerB,ToadA,ToadB,BeaconA,BeaconB,GliderA,GliderB,GliderC,GliderD,LightWeightSpaceShipA,LightWeightSpaceShipB,LightWeightSpaceShipC,LightWeightSpaceShipD]
+#Visited Matrix that determines the values of life
+visited=None
+#Log
+Log=""
 #Adds the figure selected from above into the grid from the position I,J
 def AddFigure(Name,i,j,Grid):
     #Add Still Lifes
@@ -47,7 +53,7 @@ def AddFigure(Name,i,j,Grid):
     elif Name=="ToadA":
         Grid[i:i+4,j:j+4]=ToadA
     elif Name=="ToadB":
-        Grid[i:i+4,j:j+2]=ToadB
+        Grid[i:i+2,j:j+4]=ToadB
     elif Name=="BeaconA":
         Grid[i:i+4,j:j+4]=BeaconA
     elif Name=="BeaconB":
@@ -61,66 +67,66 @@ def AddFigure(Name,i,j,Grid):
         Grid[i:i+3,j:j+3]=GliderC
     elif Name=="GliderD":
         Grid[i:i+3,j:j+3]=GliderD
-    elif Name=="LightWeightSpaceshipA":
-        Grid[i:i+5,j:j+4]=LightWeightSpaceshipA
-    elif Name=="LightWeightSpaceshipB":
-        Grid[i:i+5,j:j+4]=LightWeightSpaceshipB
-    elif Name=="LightWeightSpaceshipC":
-        Grid[i:i+5,j:j+4]=LightWeightSpaceshipC
-    elif Name=="LightWeightSpaceshipD":
-        Grid[i:i+5,j:j+4]=LightWeightSpaceshipD
+    elif Name=="LightWeightSpaceShipA":
+        Grid[i:i+4,j:j+5]=LightWeightSpaceShipA
+    elif Name=="LightWeightSpaceShipB":
+        Grid[i:i+4,j:j+5]=LightWeightSpaceShipB
+    elif Name=="LightWeightSpaceShipC":
+        Grid[i:i+4,j:j+5]=LightWeightSpaceShipC
+    elif Name=="LightWeightSpaceShipD":
+        Grid[i:i+4,j:j+5]=LightWeightSpaceShipD
     else:
         print("Unabailable Figure")
     return Grid
-#returns a grid of NxN random values
+#returns a grid of NxN randint values
 def CreateUniverse(N):
     return np.zeros(N*N).reshape(N,N)
-#returns a grid of NxN random values
-def randomGrid(N):
+#returns a grid of NxN randint values
+def randomUniverse(N):
     return np.random.choice([0,255], N*N, p=[0.2, 0.8]).reshape(N, N)
 #Checks how many Neighbours have
-def Neighbors(I,J,grid):
+def Neighbors(I,J,Grid,N):
     neighbors=0
     for i in range(I-1,I+2):
         for j in range(J-1,J+2):
             if i==I and j==J:
                 continue
-            elif i>len(grid) or j>len(Grid) or i<0 or j<0:
+            elif i>=N or j>=N or i<0 or j<0:
                 continue
             elif Grid[i][j]!=0:
                 neighbors-=-1
     return neighbours
 #Changes the grid with the Rules
-def NextGeneration(universe):
-    nextUniverse=CreateUniverse(len(universe))
-    for i in range(len(universe)):
-        for j in range(len(universe)):
+def NextGeneration(universe,N):
+    nextUniverse=CreateUniverse(N)
+    for i in range(N):
+        for j in range(N):
             if universe[i][j]==255:
-                neighbors=Neighbors(i,j,universe)
+                neighbors=Neighbors(i,j,universe,N)
                 if neighbors==2 or neighbors==3:
                     nextUniverse[i][j]=255
-            if universe[i][j]==0 and Neighbors(i,j,universe)==3:
+            if universe[i][j]==0 and Neighbors(i,j,universe,N)==3:
                 nextUniverse[i][j]=255
     return nextUniverse
 #Populate the Universe with the file Input
-def PopulateUniverseFile(Universe,File):
+def PopulateUniverseFile(Universe,File,N):
     f=open(FILE, 'r')
     for line in f.readlines:
         instruction=line.split(" ")
         if len(instruction)!=3:
             continue
         name,x,y=instruction[0],int(instruction[1]),int(instruction[2])
-        if x<0 or x>=len(Universe)-5 or y<0 or y>=len(Universe)-5:
+        if x<0 or x>=N-5 or y<0 or y>=N-5:
             continue
         Universe=AddFigure(name,x,y,Universe)
     return
 #Populates the Universe with a range of 5% to 10% of the dimension of living patterns
-def PopulateUniverse(Universe):
-    for i in range(rdm.random(int(len(Universe)/20),int(len(universe)/10))):
-        random=rdm.random(0,2)
+def PopulateUniverse(Universe,N):
+    for i in range(rdm.randint(int(N/20),int(N/10))):
+        randint=rdm.randint(0,2)
         fig=name=None
-        if random==0:
-            fig==rdm.random(0,4)
+        if randint==0:
+            fig==rdm.randint(0,4)
             if fig==0:
                 name="Block"
             elif fig==1:
@@ -131,8 +137,8 @@ def PopulateUniverse(Universe):
                 name="Boat"
             else:
                 name="Tub"
-        elif random==1:
-            fig=rdm.random(0,5)
+        elif randint==1:
+            fig=rdm.randint(0,5)
             if fig==0:
                 name="BlinkerA"
             elif fig==1:
@@ -146,7 +152,7 @@ def PopulateUniverse(Universe):
             else:
                 name="BeaconB"
         else:
-            fig=rdm.random(0,7)
+            fig=rdm.randint(0,7)
             if fig==0:
                 name="GliderA"
             elif fig==1:
@@ -156,16 +162,94 @@ def PopulateUniverse(Universe):
             elif fig==3:
                 name="GliderD"
             elif fig==4:
-                name="LightWeightSpaceshipA"
+                name="LightWeightSpaceShipA"
             elif fig==5:
-                name="LightWeightSpaceshipB"
+                name="LightWeightSpaceShipB"
             elif fig==6:
-                name="LightWeightSpaceshipC"
+                name="LightWeightSpaceShipC"
             else:
-                name="LightWeightSpaceshipD"
-        Universe=AddFigure(name,rdm.random(0,len(Universe)-6),rdm.random(0,len(Universe)-6),Universe)
+                name="LightWeightSpaceShipD"
+        Universe=AddFigure(name,rdm.randint(0,N-6),rdm.randint(0,N-6),Universe)
     return
-
+#Checks for any form of life (Still Lifes, Oscilators, Spaceships)
+def Life(Universe,N):
+    Livingform=np.zeros(19)
+    FormOfLive=0
+    for i in range(N-6):
+        for j in range(N-6):
+            if Universe[i][j]==255 and visited[i][j]==False:
+                for life in Living:
+                    livingform=True
+                    for i2 in range(len(life)):
+                        for j2 in range(len(life[0])):
+                            if Universe[i+i2][j+j2]==life[i2][j2]:
+                                continue
+                            livingform=False
+                    if livingform:
+                        for i2 in range(len(life)):
+                            for j2 in range(len(life[0])):
+                                visited[i+i2][j+j2]=True
+                        Livingform[FormOfLive]-=-1
+                FormOfLive=0
+    Log+="Blocks = "+Livingform[0]+"\n"
+    Log+="Beehive = "+Livingform[1]+"\n"
+    Log+="Loaf = "+Livingform[2]+"\n"
+    Log+="Boat = "+Livingform[3]+"\n"
+    Log+="Tub = "+Livingform[4]+"\n"
+    Log+="Blinker = "+str(int(Livingform[5]+Livingform[6]))+"\n"
+    Log+="Toad = "+str(int(Livingform[7]+Livingform[8]))+"\n"
+    Log+="Beacon = "+str(int(Livingform[9]+Livingform[10]))+"\n"
+    Log+="Glider = "+str(int(Livingform[11]+Livingform[12]+Livingform[13]+Livingform[14]))+"\n"
+    Log+="LightWeightSpaceShip = "+str(int(Livingform[15]+Livingform[16]+Livingform[17]+Livingform[18]))+"\n"
+    return 
+def CheckNeighbor(Universe,a,b,N):
+    findOther=False
+    for i in range(0,2):
+        for j in range(0,2):
+            if a-1+i<0 or b-1+j<0 or a-1+i>=N or b-1+j>=N:
+                continue
+            if Universe[a-1+i][-1+j]==255 and visited[a-1+i][-1+j]==False:
+                findOther=True
+                CheckNeighbor(Universe,a-1+i,b-1+j,N)
+    return findOther
+#Checks for any other form
+def MaybeLife(Universe,N):
+    OtherFormOfLive=0
+    for i in range(N):
+        for j in range(N):
+            if Universe[i][j]==255 and visited[i][j]==False:
+                if CheckNeighbor(Universe,i,j,N):
+                    OtherFormOfLive-=-1
+    Log+="Other Form Of Life = "+str(int(OtherFormOfLive))+"\n"
+    return
+#Update
+def Update(Frame, img, Universe, ax,N):
+    if Frame==0:
+        sys.exit()
+    Log+="メメメメメメメメ　　Generation "+str(int(Frame+1))+"　　メメメメメメメメ\n"
+    Life(Universe,N)
+    MaybeLife(Universe,N)
+    Universe=NextGeneration(Universe,N)
+    ax.set_title("Conway's Game of Life")
+    img.set_data(Universe)
+    img.set_cmap('binary')
+    Frame-=1
+    return img
+#Starts The Simulation
+def StartSimulation(Universe, Frames,N):
+    NumFrames=Frames
+    fig, ax = plt.subplots()
+    ax.grid()
+    ax = plt.gca()
+    ax.set_xticks(np.arange(-.5, N - 1, 1))
+    ax.set_yticks(np.arange(-.51, N - 1, 1))
+    ax.set_xticklabels(np.arange(0, N, 1))
+    ax.set_yticklabels(np.arange(0, N, 1))
+    img = ax.imshow(Universe, interpolation='nearest')
+    ax.set_title("Conway's Game of Life")
+    img.set_cmap('binary')
+    ani = animation.FuncAnimation(fig,Update,Frames,fargs=(NumFrames,img,Universe,ax,N))
+    plt.show()
 def main():
     Universe=Generations=File=None
     parser = argparse.ArgumentParser(description="Runs Conway's Game of Life implementation.")
@@ -180,15 +264,19 @@ def main():
             Universe=CreateUniverse(abs(parser.parse_args().dimensions))
             Generations=abs(parser.parse_args().generations)
             File=parser.parse_args().file
-            Universe=PopulateUniverseFile(File)
+            Universe=PopulateUniverseFile(Universe,File,abs(parser.parse_args().dimensions))
         else:
             Universe=randomUniverse(abs(parser.parse_args().dimensions))
             Generations=abs(parser.parse_args().generations)
-            Universe=PopulateUniverse()
+            Universe=PopulateUniverse(Universe,abs(parser.parse_args().dimensions))
     else:
         print("ERROR")
         sys.exit()
-    #StartSimulation(Universe)
+    visited=np.zeros(abs(parser.parse_args().dimensions)*abs(parser.parse_args().dimensions)).reshape([abs(parser.parse_args().dimensions),abs(parser.parse_args().dimensions)])
+    StartSimulation(Universe,parser.parse_args().generations,abs(parser.parse_args().dimensions))
+    text_file = open("report.txt", "w")
+    n = text_file.write(Log)
+    text_file.close()
     return
 
 if __name__ == '__main__':
