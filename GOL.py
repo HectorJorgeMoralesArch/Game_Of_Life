@@ -86,7 +86,18 @@ def Neighbors(I,J,grid):
             elif Grid[i][j]!=0:
                 neighbors-=-1
     return neighbours
-
+#Changes the grid with the Rules
+def NextGeneration(universe):
+    nextUniverse=CreateUniverse(len(universe))
+    for i in range(len(universe)):
+        for j in range(len(universe)):
+            if universe[i][j]==255:
+                neighbors=Neighbors(i,j,universe)
+                if neighbors==2 or neighbors==3:
+                    nextUniverse[i][j]=255
+            if universe[i][j]==0 and Neighbors(i,j,universe)==3:
+                nextUniverse[i][j]=255
+    return nextUniverse
 def main():
     Universe=np.array()
     Selection=int(input("Select the way to create the Universe.\n\t1) Random Universe No Defines Dimensions\n\t2) Random Universe With Dimensions\n\t3)Decide Own Size\n\t4) File Input (WIP)\n"))
