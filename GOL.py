@@ -21,3 +21,11 @@ LightWeightSpaceshipA=np.array([[255,0,0,255,0],[0,0,0,0,255],[255,0,0,0,255],[0
 LightWeightSpaceshipB=np.array([[0,0,255,255,0],[255,255,0,255,255],[255,255,255,255,0],[0,255,255,0,0]])
 LightWeightSpaceshipC=np.array([[0,255,255,255,255],[255,0,0,0,255],[0,0,0,0,255],[255,0,0,255,0]])
 LightWeightSpaceshipD=np.array([[0,255,255,0,0],[255,255,255,255,0],[255,255,0,255,255],[0,0,255,255,0]])
+#returns a grid of NxN random values
+def CreateUniverse(N):
+    return np.zeros(N*N).reshape(N,N)
+
+def main():
+    universe=CreateUniverse(int(input("Universe Size = ")))
+    return
+main()
