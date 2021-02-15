@@ -28,7 +28,7 @@ def AddFigure(Name,i,j,Grid):
     if Name=="Block":
         Grid[i:i+2,j:j+2]=Block
     elif Name=="Beehive":
-        Grid[i:i+4,j:j+3]=Beehive
+        Grid[i:i+3,j:j+4]=Beehive
     elif Name=="Loaf":
         Grid[i:i+4,j:j+4]=Loaf
     elif Name=="Boat":
@@ -37,7 +37,7 @@ def AddFigure(Name,i,j,Grid):
         Grid[i:i+3,j:j+3]=Tub
     #Add Oscilators
     elif Name=="BlinkerA":
-        Grid[i,j:j+3]=BlinkerA
+        Grid[i:i+3,j:j+1]=BlinkerA
     elif Name=="BlinkerB":
         Grid[i:i+3,j]=BlinkerB
     elif Name=="ToadA":
@@ -85,8 +85,7 @@ def main():
         Universe=CreateUniverse(abs(int(input("Universe Size = "))))
     elif Selection==4:
         return
-    grid = randomGrid(N)
-    print(grid)
+
     return
 
 if __name__ == '__main__':
