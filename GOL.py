@@ -1,4 +1,5 @@
 import numpy as np
+import random as rdm
 #Still Lifes
 Block=np.array([[255,255],[255,255]])
 Beehive=np.array([[0,255,255,0],[255,0,0,255],[0,255,255,0]])
@@ -70,15 +71,23 @@ def AddFigure(Name,i,j,Grid):
 #returns a grid of NxN random values
 def CreateUniverse(N):
     return np.zeros(N*N).reshape(N,N)
-
+#returns a grid of NxN random values
+def randomGrid(N):
+    return np.random.choice([0,255], N*N, p=[0.2, 0.8]).reshape(N, N)
 def main():
-    universe=CreateUniverse(int(input("Universe Size = ")))
-    universe=AddFigure("Block",2,2,universe)
-    universe=AddFigure("Block",6,6,universe)
-    universe=AddFigure("Block",2,6,universe)
-    universe=AddFigure("Block",6,2,universe)
-    universe=AddFigure("Block",2,10,universe)
-    universe=AddFigure("Block",10,2,universe)
-    print(universe)
+    Universe=np.array()
+    Selection=int(input("Select the way to create the Universe.\n\t1) Random Universe No Defines Dimensions\n\t2) Random Universe With Dimensions\n\t3)Decide Own Size\n\t4) File Input (WIP)\n"))
+    if Selection==1:
+        Universe=RandomUniverse(rdm.randint(10,15))
+    elif Selection==2:
+        Universe=RandomUniverse(abs(int(input("Universe Size = "))))
+    elif Selection==3:
+        Universe=CreateUniverse(abs(int(input("Universe Size = "))))
+    elif Selection==4:
+        return
+    grid = randomGrid(N)
+    print(grid)
     return
-main()
+
+if __name__ == '__main__':
+    main()
