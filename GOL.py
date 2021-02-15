@@ -74,6 +74,19 @@ def CreateUniverse(N):
 #returns a grid of NxN random values
 def randomGrid(N):
     return np.random.choice([0,255], N*N, p=[0.2, 0.8]).reshape(N, N)
+#Checks how many Neighbours have
+def Neighbors(I,J,grid):
+    neighbors=0
+    for i in range(I-1,I+2):
+        for j in range(J-1,J+2):
+            if i==I and j==J:
+                continue
+            elif i>len(grid) or j>len(Grid) or i<0 or j<0:
+                continue
+            elif Grid[i][j]!=0:
+                neighbors-=-1
+    return neighbours
+
 def main():
     Universe=np.array()
     Selection=int(input("Select the way to create the Universe.\n\t1) Random Universe No Defines Dimensions\n\t2) Random Universe With Dimensions\n\t3)Decide Own Size\n\t4) File Input (WIP)\n"))
