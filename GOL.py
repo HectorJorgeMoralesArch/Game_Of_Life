@@ -102,6 +102,69 @@ def NextGeneration(universe):
             if universe[i][j]==0 and Neighbors(i,j,universe)==3:
                 nextUniverse[i][j]=255
     return nextUniverse
+#Populate the Universe with the file Input
+def PopulateUniverseFile(Universe,File):
+    f=open(FILE, 'r')
+    for line in f.readlines:
+        instruction=line.split(" ")
+        if len(instruction)!=3:
+            continue
+        name,x,y=instruction[0],int(instruction[1]),int(instruction[2])
+        if x<0 or x>=len(Universe)-5 or y<0 or y>=len(Universe)-5:
+            continue
+        Universe=AddFigure(name,x,y,Universe)
+    return
+#Populates the Universe with a range of 5% to 10% of the dimension of living patterns
+def PopulateUniverse(Universe):
+    for i in range(rdm.random(int(len(Universe)/20),int(len(universe)/10))):
+        random=rdm.random(0,2)
+        fig=name=None
+        if random==0:
+            fig==rdm.random(0,4)
+            if fig==0:
+                name="Block"
+            elif fig==1:
+                name="Beehive"
+            elif fig==2:
+                name="Loaf"
+            elif fig==3:
+                name="Boat"
+            else:
+                name="Tub"
+        elif random==1:
+            fig=rdm.random(0,5)
+            if fig==0:
+                name="BlinkerA"
+            elif fig==1:
+                name="BlinkerB"
+            elif fig==2:
+                name="ToadA"
+            elif fig==3:
+                name="ToadB"
+            elif fig==4:
+                name="BeaconA"
+            else:
+                name="BeaconB"
+        else:
+            fig=rdm.random(0,7)
+            if fig==0:
+                name="GliderA"
+            elif fig==1:
+                name="GliderB"
+            elif fig==2:
+                name="GliderC"
+            elif fig==3:
+                name="GliderD"
+            elif fig==4:
+                name="LightWeightSpaceshipA"
+            elif fig==5:
+                name="LightWeightSpaceshipB"
+            elif fig==6:
+                name="LightWeightSpaceshipC"
+            else:
+                name="LightWeightSpaceshipD"
+        Universe=AddFigure(name,rdm.random(0,len(Universe)-6),rdm.random(0,len(Universe)-6),Universe)
+    return
 
 def main():
     Universe=Generations=File=None
