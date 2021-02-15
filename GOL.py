@@ -1,5 +1,9 @@
+import sys
+import argparse
 import numpy as np
 import random as rdm
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 #Still Lifes
 Block=np.array([[255,255],[255,255]])
 Beehive=np.array([[0,255,255,0],[255,0,0,255],[0,255,255,0]])
@@ -98,18 +102,30 @@ def NextGeneration(universe):
             if universe[i][j]==0 and Neighbors(i,j,universe)==3:
                 nextUniverse[i][j]=255
     return nextUniverse
-def main():
-    Universe=np.array()
-    Selection=int(input("Select the way to create the Universe.\n\t1) Random Universe No Defines Dimensions\n\t2) Random Universe With Dimensions\n\t3)Decide Own Size\n\t4) File Input (WIP)\n"))
-    if Selection==1:
-        Universe=RandomUniverse(rdm.randint(10,15))
-    elif Selection==2:
-        Universe=RandomUniverse(abs(int(input("Universe Size = "))))
-    elif Selection==3:
-        Universe=CreateUniverse(abs(int(input("Universe Size = "))))
-    elif Selection==4:
-        return
 
+def main():
+    Universe=Generations=File=None
+    parser = argparse.ArgumentParser(description="Runs Conway's Game of Life implementation.")
+    parser.add_argument('-d', '--dimensions', type=int, required=True, help="Dimensions of the Universe N*N. Must be an INTEGER. Preferebly between 50 and 1000")
+    parser.add_argument('-g', '--generations', type=int, required=True, help="Number of Generations. Must be an INTEGER.")
+    parser.add_argument('-f', '--file', type=str, required=False, help="Name or path of the file with the Map to simulate.")
+    if len(sys.argv) < 2:
+        print("ERROR Arguments Missing.\nMUST be in ANY of this formats\npython conway.py -d <Dimensions> -g <Generations> -i <file>\npython conway.py -d <Dimensions> -g <Generations>")
+        sys.exit()
+    elif bool(parser.parse_args().dimensions) and bool(parser.parse_args().generations):
+        if bool(parser.parse_args().file):
+            Universe=CreateUniverse(abs(parser.parse_args().dimensions))
+            Generations=abs(parser.parse_args().generations)
+            File=parser.parse_args().file
+            Universe=PopulateUniverseFile(File)
+        else:
+            Universe=randomUniverse(abs(parser.parse_args().dimensions))
+            Generations=abs(parser.parse_args().generations)
+            Universe=PopulateUniverse()
+    else:
+        print("ERROR")
+        sys.exit()
+    #StartSimulation(Universe)
     return
 
 if __name__ == '__main__':
